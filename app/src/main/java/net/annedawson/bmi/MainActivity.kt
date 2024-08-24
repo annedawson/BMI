@@ -58,7 +58,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.ui.res.painterResource
-
+import androidx.compose.material3.OutlinedTextField
+import net.annedawson.bmi.ui.theme.Shapes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,6 +138,7 @@ fun BmiApp() {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(16.dp))
+            /*
             EditNumberField(
                 label = R.string.weight,
                 keyboardOptions = KeyboardOptions(
@@ -162,6 +164,26 @@ fun BmiApp() {
             // into the weightInput state, then as the state is observable,
             // the composable is run again with the new data,
             // so that the UI is redrawn with the new data.
+
+
+             */
+
+            OutlinedTextField(
+                value = weightInput,
+                onValueChange = { weightInput = it },
+                label = { Text(stringResource(R.string.weight)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                ),
+                modifier = Modifier.fillMaxWidth(), // Add this for full width
+                singleLine = true, // Add this for single line input
+                shape = Shapes.large // Add this for rounded corners
+            )
+
             EditNumberField(
                 label = R.string.height,
                 keyboardOptions = KeyboardOptions(
