@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,13 +79,13 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BmiApp() {
-    var weightInput by remember { mutableStateOf("") }
+    var weightInput by rememberSaveable { mutableStateOf("") }
     // The String weight is now a state.  is observable mutable state.
     // Initially, the value of weight is an empty string
     // weight state was hoisted from EditNumberField
     //  and then passed to EditNumberField
     // remember and mutableStateOf are functions (that you can step into using the debugger)
-    var heightInput by remember { mutableStateOf("") }
+    var heightInput by rememberSaveable { mutableStateOf("") }
 
     val weight = weightInput.toDoubleOrNull() ?: 0.0  //  convert String to Integer
     // toIntOrNull() parses the string to an Int number
@@ -98,12 +99,12 @@ fun BmiApp() {
 
     val focusManager = LocalFocusManager.current  // Unit 6: Set keyboard actions
 
-    var moreDetails by remember { mutableStateOf(false) }
+    var moreDetails by rememberSaveable { mutableStateOf(false) }
     val bmi = calculateBmi(weight, height)
 
     // bmi is now a state  ??
 
-    var bmiCategory by remember {
+    var bmiCategory by rememberSaveable {
         mutableStateOf("")
     }
     val bmiValue = bmi.toFloatOrNull() ?: 0.0f
@@ -184,7 +185,22 @@ fun BmiApp() {
                 shape = Shapes.large // Add this for rounded corners
             )
 
-            EditNumberField(
+            OutlinedTextField(
+                value = heightInput,
+                onValueChange = { heightInput = it },
+                label = { Text(stringResource(R.string.height)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }),
+                modifier = Modifier.fillMaxWidth(), // Add this for full width
+                singleLine = true, // Add this for single line input
+                shape = Shapes.large // Add this for rounded corners
+            )
+
+ /*           EditNumberField(
                 label = R.string.height,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -195,6 +211,8 @@ fun BmiApp() {
                 value = heightInput,
                 onValueChange = { heightInput = it }
             )
+ */
+
             MoreDetailsRow(moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
             Spacer(modifier = Modifier.height(12.dp))
             Text(
@@ -310,7 +328,10 @@ fun BmiTopAppBar(modifier: Modifier = Modifier) {
         )
         Text(
             text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(16.dp)
+
         )
     }
 }
