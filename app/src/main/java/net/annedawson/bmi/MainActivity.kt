@@ -327,8 +327,8 @@ fun BmiTopAppBar(modifier: Modifier = Modifier) {
             contentDescription = null
         )
         Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.titleLarge,
+            text = stringResource(R.string.top_app_bar_title),
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(16.dp)
 
