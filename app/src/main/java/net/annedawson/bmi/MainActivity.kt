@@ -31,8 +31,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +63,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.OutlinedTextField
 import net.annedawson.bmi.ui.theme.Shapes
+import androidx.compose.foundation.isSystemInDarkTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,6 +130,8 @@ fun BmiApp() {
     {
         Column(
             modifier = Modifier
+                // added the following line to allow scrolling
+                .verticalScroll(rememberScrollState())
                 .padding(40.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -134,7 +139,11 @@ fun BmiApp() {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(id = R.string.calculate_bmi),
+                //text = stringResource(id = R.string.calculate_bmi),
+                // try replacing the line above with the line below.
+                // In horizontal orientation the text "Calculate BMI"
+                // was visible on scrolling, hence I replaced with empty text.
+                text = "",
                 fontSize = 24.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -282,10 +291,19 @@ fun MoreDetailsRow(
             modifier = modifier
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.End),
+            /*colors = SwitchDefaults.colors(
+               uncheckedThumbColor = Color.DarkGray
+            )*/
+
             colors = SwitchDefaults.colors(
-                uncheckedThumbColor = Color.DarkGray
+                uncheckedThumbColor = if (isSystemInDarkTheme()) {
+                    Color.LightGray
+                } else {
+                    Color.DarkGray // Or any dark color with good contrast
+                }
             )
         )
+
     }
 }
 
