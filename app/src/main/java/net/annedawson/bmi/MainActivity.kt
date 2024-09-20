@@ -64,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.OutlinedTextField
 import net.annedawson.bmi.ui.theme.Shapes
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,6 +104,8 @@ fun BmiApp() {
     val focusManager = LocalFocusManager.current  // Unit 6: Set keyboard actions
 
     var moreDetails by rememberSaveable { mutableStateOf(false) }
+    // moreDetails is now a state
+
     val bmi = calculateBmi(weight, height)
 
     // bmi is now a state  ??
@@ -117,9 +120,13 @@ fun BmiApp() {
         bmiValue in 18.5..24.9 -> "Normal weight"
         bmiValue in 25.0..29.9 -> "Overweight"
         bmiValue > 29.9 -> "Obese"
-        else -> "Uncategorized"
+//        else -> "Uncategorized"
+        else -> ""
     }
 
+
+    // To hide the keyboard
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     Scaffold(
@@ -209,18 +216,18 @@ fun BmiApp() {
                 shape = Shapes.large // Add this for rounded corners
             )
 
- /*           EditNumberField(
-                label = R.string.height,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(  // Unit 6: Set keyboard actions
-                    onDone = { focusManager.clearFocus() }),
-                value = heightInput,
-                onValueChange = { heightInput = it }
-            )
- */
+            /*           EditNumberField(
+                           label = R.string.height,
+                           keyboardOptions = KeyboardOptions(
+                               keyboardType = KeyboardType.Number,
+                               imeAction = ImeAction.Done
+                           ),
+                           keyboardActions = KeyboardActions(  // Unit 6: Set keyboard actions
+                               onDone = { focusManager.clearFocus() }),
+                           value = heightInput,
+                           onValueChange = { heightInput = it }
+                       )
+            */
 
             MoreDetailsRow(moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
             Spacer(modifier = Modifier.height(12.dp))
@@ -232,13 +239,23 @@ fun BmiApp() {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = bmiCategory,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            if (moreDetails) {
+                // To hide the keyboard
+                keyboardController?.hide()
+                Image(
+                    painter = painterResource(id = R.drawable.bmi),
+                    contentDescription = "My Image"
+                )
+            }
+
         }
     }
 }
