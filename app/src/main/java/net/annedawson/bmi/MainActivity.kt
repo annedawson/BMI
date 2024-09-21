@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -64,6 +63,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.annedawson.bmi.ui.theme.BmiTheme
 import net.annedawson.bmi.ui.theme.Shapes
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+
+// the above from Woof app to make images round
 
 
 class MainActivity : ComponentActivity() {
@@ -109,7 +113,7 @@ fun BmiApp() {
     var metricUnits by rememberSaveable { mutableStateOf(false) }
     // moreDetails is now a state. it will be changed by the switch.
 
-    val bmi = calculateBmi(weight, height)
+    val bmi = calculateBmi(weight, height, metricUnits)
 
     // bmi is now a state  ??
 
@@ -117,12 +121,16 @@ fun BmiApp() {
         mutableStateOf("")
     }
     val bmiValue = bmi.toFloatOrNull() ?: 0.0f
+
+    // https://www.cdc.gov/bmi/adult-calculator/bmi-categories.html
     bmiCategory = when {
-        bmiValue in 13.1..16.0 -> "Severe underweight"
-        bmiValue in 16.1..18.4 -> "Underweight"
-        bmiValue in 18.5..24.9 -> "Normal weight"
+        bmiValue in 13.1..15.9 -> "Severe underweight"
+        bmiValue in 16.0..18.4 -> "Underweight"
+        bmiValue in 18.5..24.9 -> "Healthy weight"
         bmiValue in 25.0..29.9 -> "Overweight"
-        bmiValue > 29.9 -> "Obese"
+        bmiValue in 30.0..34.9 -> "Obesity Class 1"
+        bmiValue in 35.0..39.9 -> "Obesity Class 2"
+        bmiValue >= 40.0 -> "Obesity Class 3"
 //        else -> "Uncategorized"
         else -> ""
     }
@@ -191,7 +199,13 @@ fun BmiApp() {
             OutlinedTextField(
                 value = weightInput,
                 onValueChange = { weightInput = it },
-                label = { Text(stringResource(R.string.weight)) },
+                label = {
+                    if (metricUnits) {
+                        Text(stringResource(R.string.weight_kg))
+                    } else {
+                        Text(stringResource(R.string.weight_lb))
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -207,7 +221,13 @@ fun BmiApp() {
             OutlinedTextField(
                 value = heightInput,
                 onValueChange = { heightInput = it },
-                label = { Text(stringResource(R.string.height)) },
+                label = {
+                    if (metricUnits) {
+                        Text(stringResource(R.string.height_cm))
+                    } else {
+                        Text(stringResource(R.string.height_in))
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -306,9 +326,9 @@ fun MetricDetailsRow(
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-            //.size(48.dp),
-        //verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement =   Arrangement.SpaceEvenly
+        //.size(48.dp),
+        horizontalArrangement =   Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = stringResource(R.string.metric_units),
             fontSize = 12.sp)
@@ -316,9 +336,9 @@ fun MetricDetailsRow(
         Switch(  // import androidx.compose.material3.Switch
             checked = metricUnits,
             onCheckedChange = onMetricUnitsChanged,
-           /*colors = SwitchDefaults.colors(
-               uncheckedThumbColor = Color.DarkGray
-            )*/
+            /*colors = SwitchDefaults.colors(
+                uncheckedThumbColor = Color.DarkGray
+             )*/
             colors = SwitchDefaults.colors(
                 uncheckedThumbColor = if (isSystemInDarkTheme()) {
                     Color.LightGray
@@ -347,6 +367,7 @@ fun MetricDetailsRow(
 }
 
 
+
 // change "private" to "internal" to allow
 // module access for local testing, see:
 // https://developer.android.com/codelabs/basic-android-kotlin-compose-write-automated-tests?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-compose-unit-2-pathway-3%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-compose-write-automated-tests#3
@@ -356,14 +377,18 @@ fun MetricDetailsRow(
 // it's only public for testing purposes.
 // In the Tip Time app, this function is used by the test TipCalculatorTests,
 // calculate_20_percent_tip_no_roundup() test
-internal fun calculateBmi(weight: Double, height: Double): String {
+internal fun calculateBmi(weight: Double, height: Double, metricUnits: Boolean): String {
     var bmi: Double
     bmi = 0.0
 
     if (height > 0.0 && weight > 0.0) {
-        bmi = weight / (height * height) * 703
+        if (metricUnits) {
+            bmi = weight / (height * height) * 10000
+        }
+        else {
+            bmi = weight / (height * height) * 703
+        }
     }
-
     return String.format("%.1f", bmi)
     // convert the number to a 1 decimal place float formatted string
 }
@@ -379,7 +404,10 @@ fun BmiTopAppBar(modifier: Modifier = Modifier) {
         Image(
             modifier = Modifier
                 .size(64.dp)
-                .padding(8.dp),
+                .padding(8.dp)
+                .clip(RoundedCornerShape(50)),
+            // to make image a circle with crop
+            contentScale = ContentScale.Crop,
             painter = painterResource(R.drawable.bmi),
             contentDescription = null
         )
