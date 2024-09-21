@@ -104,7 +104,10 @@ fun BmiApp() {
     val focusManager = LocalFocusManager.current  // Unit 6: Set keyboard actions
 
     var moreDetails by rememberSaveable { mutableStateOf(false) }
-    // moreDetails is now a state
+    // moreDetails is now a state. it will be changed by the switch.
+
+    var metricUnits by rememberSaveable { mutableStateOf(false) }
+    // moreDetails is now a state. it will be changed by the switch.
 
     val bmi = calculateBmi(weight, height)
 
@@ -239,17 +242,17 @@ fun BmiApp() {
             ) {
                 Text(
                     text = stringResource(R.string.bmi, bmi),
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = bmiCategory,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            MoreDetailsRow(moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
+            MetricDetailsRow(metricUnits = metricUnits, onMetricUnitsChanged = { metricUnits = it },moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
             if (moreDetails) {
                 // To hide the keyboard
                 keyboardController?.hide()
@@ -293,28 +296,44 @@ fun EditNumberField(
 }
 
 @Composable
-fun MoreDetailsRow(
+fun MetricDetailsRow(
+    metricUnits: Boolean,
+    onMetricUnitsChanged: (Boolean) -> Unit,
     moreDetails: Boolean,
     onMoreDetailsChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .size(48.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth(),
+            //.size(48.dp),
+        //verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement =   Arrangement.SpaceEvenly
     ) {
-        Text(text = stringResource(R.string.more_details))
+        Text(text = stringResource(R.string.metric_units),
+            fontSize = 12.sp)
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(  // import androidx.compose.material3.Switch
+            checked = metricUnits,
+            onCheckedChange = onMetricUnitsChanged,
+           /*colors = SwitchDefaults.colors(
+               uncheckedThumbColor = Color.DarkGray
+            )*/
+            colors = SwitchDefaults.colors(
+                uncheckedThumbColor = if (isSystemInDarkTheme()) {
+                    Color.LightGray
+                } else {
+                    Color.DarkGray // Or any dark color with good contrast
+                }
+            )
+        )
+        Spacer(modifier = Modifier.weight(3f))
+        Text(text = stringResource(R.string.more_details),
+            fontSize = 12.sp)
+        Spacer(modifier = Modifier.weight(1f))
         Switch(  // import androidx.compose.material3.Switch
             checked = moreDetails,
             onCheckedChange = onMoreDetailsChanged,
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
-            /*colors = SwitchDefaults.colors(
-               uncheckedThumbColor = Color.DarkGray
-            )*/
-
             colors = SwitchDefaults.colors(
                 uncheckedThumbColor = if (isSystemInDarkTheme()) {
                     Color.LightGray
