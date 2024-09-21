@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import net.annedawson.bmi.ui.theme.BmiTheme
 import net.annedawson.bmi.ui.theme.Shapes
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 
@@ -275,11 +276,12 @@ fun BmiApp() {
             MetricDetailsRow(metricUnits = metricUnits, onMetricUnitsChanged = { metricUnits = it },moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
             if (moreDetails) {
                 // To hide the keyboard
-                keyboardController?.hide()
-                Image(
+                //keyboardController?.hide()
+                BmiCategories()
+                /*Image(
                     painter = painterResource(id = R.drawable.bmi),
                     contentDescription = "My Image"
-                )
+                )*/
             }
 
         }
@@ -420,6 +422,41 @@ fun BmiTopAppBar(modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+fun BmiCategories() {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "BMI Categories", style = MaterialTheme.typography.titleMedium)
+        if (isSystemInDarkTheme()) {
+            BmiCategoryItem(category = "Underweight", range = "< 18.5", color = Color.White)
+            BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.White)
+            BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.White)
+            BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.White)
+        }
+        else {
+            BmiCategoryItem(category = "Underweight", range = "< 18.5", color = Color.Blue)
+            BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.Blue)
+            BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.Blue)
+            BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.Blue)
+        }
+    }
+}
+
+@Composable
+fun BmiCategoryItem(category: String, range: String, color: Color) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        // colors = CardDefaults.cardColors(containerColor = color),elevation=
+    ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(text = category, style = MaterialTheme.typography.titleMedium, color = color)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = range, style = MaterialTheme.typography.bodyMedium, color = color)
+        }
+    }
+}
+
+
 
 
 @Preview(showBackground = true)
