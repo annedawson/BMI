@@ -67,6 +67,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.foundation.clickable
+
 
 // the above from Woof app to make images round
 
@@ -425,6 +429,7 @@ fun BmiTopAppBar(modifier: Modifier = Modifier) {
 
 @Composable
 fun BmiCategories() {
+    val uriHandler = LocalUriHandler.current
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "BMI Categories", style = MaterialTheme.typography.titleMedium)
         if (isSystemInDarkTheme()) {
@@ -434,12 +439,22 @@ fun BmiCategories() {
             BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.White)
         }
         else {
-            BmiCategoryItem(category = "Underweight", range = "< 18.5", color = Color.Blue)
-            BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.Blue)
-            BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.Blue)
-            BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.Blue)
+            BmiCategoryItem(category = "Underweight", range = "< 18.5", color = Color.Black)
+            BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.Black)
+            BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.Black)
+            BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.Black)
         }
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "Learn more about BMI",
+            modifier = Modifier.clickable {
+                uriHandler.openUri("https://www.cdc.gov/bmi/adult-calculator/bmi-categories.html")
+            },
+            color = Color.Magenta,
+            style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
+        )
     }
+
 }
 
 @Composable
