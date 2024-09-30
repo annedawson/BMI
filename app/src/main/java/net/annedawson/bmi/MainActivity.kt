@@ -155,7 +155,8 @@ fun BmiApp() {
             modifier = Modifier
                 // added the following line to allow scrolling
                 .verticalScroll(rememberScrollState())
-                .padding(40.dp)
+                // try changing the padding to 40 from 48
+                .padding(48.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -463,7 +464,7 @@ fun BmiCategoryItem(category: String, range: String, color: Color) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         // colors = CardDefaults.cardColors(containerColor = color),elevation=
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(text = category, style = MaterialTheme.typography.titleMedium, color = color)
             Spacer(modifier = Modifier.weight(1f))
             Text(text = range, style = MaterialTheme.typography.bodyMedium, color = color)
