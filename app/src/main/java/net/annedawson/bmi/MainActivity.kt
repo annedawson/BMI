@@ -278,7 +278,11 @@ fun BmiApp() {
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            MetricDetailsRow(metricUnits = metricUnits, onMetricUnitsChanged = { metricUnits = it },moreDetails = moreDetails, onMoreDetailsChanged = { moreDetails = it })
+            MetricDetailsRow(
+                metricUnits = metricUnits,
+                onMetricUnitsChanged = { metricUnits = it },
+                moreDetails = moreDetails,
+                onMoreDetailsChanged = { moreDetails = it })
             if (moreDetails) {
                 // To hide the keyboard
                 //keyboardController?.hide()
@@ -334,11 +338,13 @@ fun MetricDetailsRow(
         modifier = Modifier
             .fillMaxWidth(),
         //.size(48.dp),
-        horizontalArrangement =   Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(R.string.metric_units),
-            fontSize = 12.sp)
+        Text(
+            text = stringResource(R.string.metric_units),
+            fontSize = 12.sp
+        )
         Spacer(modifier = Modifier.weight(1f))
         Switch(  // import androidx.compose.material3.Switch
             checked = metricUnits,
@@ -355,8 +361,10 @@ fun MetricDetailsRow(
             )
         )
         Spacer(modifier = Modifier.weight(3f))
-        Text(text = stringResource(R.string.more_details),
-            fontSize = 12.sp)
+        Text(
+            text = stringResource(R.string.more_details),
+            fontSize = 12.sp
+        )
         Spacer(modifier = Modifier.weight(1f))
         Switch(  // import androidx.compose.material3.Switch
             checked = moreDetails,
@@ -372,7 +380,6 @@ fun MetricDetailsRow(
 
     }
 }
-
 
 
 // change "private" to "internal" to allow
@@ -391,8 +398,7 @@ internal fun calculateBmi(weight: Double, height: Double, metricUnits: Boolean):
     if (height > 0.0 && weight > 0.0) {
         if (metricUnits) {
             bmi = weight / (height * height) * 10000
-        }
-        else {
+        } else {
             bmi = weight / (height * height) * 703
         }
     }
@@ -438,8 +444,7 @@ fun BmiCategories() {
             BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.White)
             BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.White)
             BmiCategoryItem(category = "Obese", range = "≥ 30", color = Color.White)
-        }
-        else {
+        } else {
             BmiCategoryItem(category = "Underweight", range = "< 18.5", color = Color.Black)
             BmiCategoryItem(category = "Healthy weight", range = "18.5 - 24.9", color = Color.Black)
             BmiCategoryItem(category = "Overweight", range = "25 - 29.9", color = Color.Black)
@@ -461,7 +466,9 @@ fun BmiCategories() {
 @Composable
 fun BmiCategoryItem(category: String, range: String, color: Color) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
         // colors = CardDefaults.cardColors(containerColor = color),elevation=
     ) {
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -471,8 +478,6 @@ fun BmiCategoryItem(category: String, range: String, color: Color) {
         }
     }
 }
-
-
 
 
 @Preview(showBackground = true)
