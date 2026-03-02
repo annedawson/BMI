@@ -115,10 +115,10 @@ fun BmiApp() {
     var moreDetails by rememberSaveable { mutableStateOf(false) }
     // moreDetails is now a state. it will be changed by the switch.
 
-    var metricUnits by rememberSaveable { mutableStateOf(false) }
-    // moreDetails is now a state. it will be changed by the switch.
+    var imperialUnits by rememberSaveable { mutableStateOf(false) }
+    // imperialUnits is now a state. it will be changed by the switch.
 
-    val bmi = calculateBmi(weight, height, metricUnits)
+    val bmi = calculateBmi(weight, height, !imperialUnits)
 
     // bmi is now a state  ??
 
@@ -206,7 +206,7 @@ fun BmiApp() {
                 value = weightInput,
                 onValueChange = { weightInput = it },
                 label = {
-                    if (metricUnits) {
+                    if (!imperialUnits) {
                         Text(stringResource(R.string.weight_kg))
                     } else {
                         Text(stringResource(R.string.weight_lb))
@@ -228,7 +228,7 @@ fun BmiApp() {
                 value = heightInput,
                 onValueChange = { heightInput = it },
                 label = {
-                    if (metricUnits) {
+                    if (!imperialUnits) {
                         Text(stringResource(R.string.height_cm))
                     } else {
                         Text(stringResource(R.string.height_in))
@@ -278,9 +278,9 @@ fun BmiApp() {
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            MetricDetailsRow(
-                metricUnits = metricUnits,
-                onMetricUnitsChanged = { metricUnits = it },
+            ImperialDetailsRow(
+                imperialUnits = imperialUnits,
+                onImperialUnitsChanged = { imperialUnits = it },
                 moreDetails = moreDetails,
                 onMoreDetailsChanged = { moreDetails = it })
             if (moreDetails) {
@@ -327,9 +327,9 @@ fun EditNumberField(
 }
 
 @Composable
-fun MetricDetailsRow(
-    metricUnits: Boolean,
-    onMetricUnitsChanged: (Boolean) -> Unit,
+fun ImperialDetailsRow(
+    imperialUnits: Boolean,
+    onImperialUnitsChanged: (Boolean) -> Unit,
     moreDetails: Boolean,
     onMoreDetailsChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -342,13 +342,13 @@ fun MetricDetailsRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(R.string.metric_units),
+            text = stringResource(R.string.imperial_units),
             fontSize = 12.sp
         )
         Spacer(modifier = Modifier.weight(1f))
         Switch(  // import androidx.compose.material3.Switch
-            checked = metricUnits,
-            onCheckedChange = onMetricUnitsChanged,
+            checked = imperialUnits,
+            onCheckedChange = onImperialUnitsChanged,
             /*colors = SwitchDefaults.colors(
                 uncheckedThumbColor = Color.DarkGray
              )*/
@@ -391,12 +391,12 @@ fun MetricDetailsRow(
 // it's only public for testing purposes.
 // In the Tip Time app, this function is used by the test TipCalculatorTests,
 // calculate_20_percent_tip_no_roundup() test
-internal fun calculateBmi(weight: Double, height: Double, metricUnits: Boolean): String {
+internal fun calculateBmi(weight: Double, height: Double, imperialUnits: Boolean): String {
     var bmi: Double
     bmi = 0.0
 
     if (height > 0.0 && weight > 0.0) {
-        if (metricUnits) {
+        if (imperialUnits) {
             bmi = weight / (height * height) * 10000
         } else {
             bmi = weight / (height * height) * 703
