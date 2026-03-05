@@ -154,16 +154,7 @@ fun BmiApp() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                //text = stringResource(id = R.string.calculate_bmi),
-                // try replacing the line above with the line below.
-                // In horizontal orientation the text "Calculate BMI"
-                // was visible on scrolling, hence I replaced with empty text.
-                text = "",
-                fontSize = 24.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+
             Spacer(modifier = Modifier.height(16.dp))
             /*
             EditNumberField(
