@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
 @Composable
 fun BmiApp() {
     var weightInput by rememberSaveable { mutableStateOf("") }
@@ -118,17 +118,12 @@ fun BmiApp() {
     var imperialUnits by rememberSaveable { mutableStateOf(false) }
     // imperialUnits is now a state. it will be changed by the switch.
 
-    val bmi = calculateBmi(weight, height, !imperialUnits)
+    val bmi = calculateBmi(weight, height, imperialUnits)
 
-    // bmi is now a state  ??
-
-    var bmiCategory by rememberSaveable {
-        mutableStateOf("")
-    }
     val bmiValue = bmi.toFloatOrNull() ?: 0.0f
 
     // https://www.cdc.gov/bmi/adult-calculator/bmi-categories.html
-    bmiCategory = when {
+    val bmiCategory = when {
         bmiValue in 13.1..15.9 -> "Severe underweight"
         bmiValue in 16.0..18.4 -> "Underweight"
         bmiValue in 18.5..24.9 -> "Healthy weight"
@@ -136,30 +131,28 @@ fun BmiApp() {
         bmiValue in 30.0..34.9 -> "Obesity Class 1"
         bmiValue in 35.0..39.9 -> "Obesity Class 2"
         bmiValue >= 40.0 -> "Obesity Class 3"
-//        else -> "Uncategorized"
-        else -> ""
+        else -> "Uncategorised"
+       // else -> ""
     }
 
-
     // To hide the keyboard
-    val keyboardController = LocalSoftwareKeyboardController.current
-
+    //val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
             BmiTopAppBar(modifier = Modifier.systemBarsPadding())
         }
     )
-    {
+    { innerPadding ->                    // ← capture the padding
         Column(
             modifier = Modifier
                 // added the following line to allow scrolling
                 .verticalScroll(rememberScrollState())
-                // try changing the padding to 40 from 48
-                .padding(48.dp)
+                .padding(innerPadding)     // ← apply it first
+                .padding(horizontal = 48.dp)  // ← then your own side padding
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -236,7 +229,7 @@ fun BmiApp() {
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus() }),
@@ -284,13 +277,9 @@ fun BmiApp() {
                 moreDetails = moreDetails,
                 onMoreDetailsChanged = { moreDetails = it })
             if (moreDetails) {
-                // To hide the keyboard
-                //keyboardController?.hide()
+
                 BmiCategories()
-                /*Image(
-                    painter = painterResource(id = R.drawable.bmi),
-                    contentDescription = "My Image"
-                )*/
+
             }
 
         }
@@ -396,14 +385,18 @@ internal fun calculateBmi(weight: Double, height: Double, imperialUnits: Boolean
     bmi = 0.0
 
     if (height > 0.0 && weight > 0.0) {
-        if (imperialUnits) {
+        if (!imperialUnits) {
             bmi = weight / (height * height) * 10000
         } else {
             bmi = weight / (height * height) * 703
         }
     }
-    return String.format("%.1f", bmi)
-    // convert the number to a 1 decimal place float formatted string
+    if (bmi > 200.0) {
+        return " >200"
+    } else {
+        return String.format("%.1f", bmi)
+        // convert the number to a 1 decimal place float formatted string
+    }
 }
 
 @Composable
