@@ -1,17 +1,16 @@
 package net.annedawson.bmi
 
 /*
-Date: Friday 9th August 2024, 13:08 PT
+
+Last updated: Wednesday 11th March 2026, 10:31 PT
+Date started: Friday 9th August 2024, 13:08 PT
 Programmer: Anne Dawson
 App: BMI
+Purpose: Calculates Body Mass Index (BMI)
 File: MainActivity.kt
-Purpose: Introduction to state in Compose
-From: https://developer.android.com/codelabs/basic-android-kotlin-compose-using-state?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-compose-unit-2-pathway-3%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-compose-using-state#0
-Status: Completed to end of Unit 2, Pathway 3, Part 5
-        Part 5 Write an instrumentation (UI) test
-https://developer.android.com/codelabs/basic-android-kotlin-compose-write-automated-tests?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-compose-unit-2-pathway-3%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-compose-write-automated-tests#4
+Status: Remembers selected measurement units between app usages
 */
-import android.annotation.SuppressLint
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -71,8 +70,22 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.foundation.clickable
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 
-// the above from Woof app to make images round
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.flow.map
+
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.datastore.preferences.core.edit
+import kotlinx.coroutines.launch
+
+val Context.dataStore by preferencesDataStore(name = "settings")
+val IMPERIAL_UNITS_KEY = booleanPreferencesKey("imperial_units")
 
 
 class MainActivity : ComponentActivity() {
@@ -115,8 +128,16 @@ fun BmiApp() {
     var moreDetails by rememberSaveable { mutableStateOf(false) }
     // moreDetails is now a state. it will be changed by the switch.
 
-    var imperialUnits by rememberSaveable { mutableStateOf(false) }
+    // var imperialUnits by rememberSaveable { mutableStateOf(false) }
     // imperialUnits is now a state. it will be changed by the switch.
+
+    val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    val imperialUnits by context.dataStore.data
+        .map { prefs -> prefs[IMPERIAL_UNITS_KEY] ?: false }
+        .collectAsState(initial = false)
 
     val bmi = calculateBmi(weight, height, imperialUnits)
 
@@ -262,11 +283,20 @@ fun BmiApp() {
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
+
             ImperialDetailsRow(
                 imperialUnits = imperialUnits,
-                onImperialUnitsChanged = { imperialUnits = it },
+                onImperialUnitsChanged = { newValue ->
+                    scope.launch {
+                        context.dataStore.edit { prefs ->
+                            prefs[IMPERIAL_UNITS_KEY] = newValue
+                        }
+                    }
+                },
                 moreDetails = moreDetails,
-                onMoreDetailsChanged = { moreDetails = it })
+                onMoreDetailsChanged = { moreDetails = it }
+            )
+
             if (moreDetails) {
 
                 BmiCategories()
