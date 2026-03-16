@@ -2,7 +2,7 @@ package net.annedawson.bmi
 
 /*
 
-Last updated: Wednesday 11th March 2026, 10:31 PT
+Last updated: Monday 16th March 2026, 15:33 PT
 Date started: Friday 9th August 2024, 13:08 PT
 Programmer: Anne Dawson
 App: BMI
@@ -141,7 +141,8 @@ fun BmiApp() {
 
     val bmi = calculateBmi(weight, height, imperialUnits)
 
-    val bmiValue = bmi.toFloatOrNull() ?: 0.0f
+    //val bmiValue = bmi.toFloatOrNull() ?: 0.0f
+    val bmiValue = bmi.toDoubleOrNull() ?: 0.0
 
     // https://www.cdc.gov/bmi/adult-calculator/bmi-categories.html
     val bmiCategory = when {
